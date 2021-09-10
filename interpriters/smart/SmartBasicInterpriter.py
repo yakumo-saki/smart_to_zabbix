@@ -1,6 +1,6 @@
 import logging
 from interpriters.smart.SmartBaseInterpriter import SmartBaseInterpriter
-from modules.const import Keys
+from modules.const import Keys, C
 
 logger = logging.getLogger(__name__)
 
@@ -10,8 +10,8 @@ class SmartBasicInterpriter(SmartBaseInterpriter):
     """
 
 
-
-
+    def isTargetDeviceType(self, data):
+        return (C.SMART_ATA_KEY in data)
 
     """
     解釈を行います。

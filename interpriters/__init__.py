@@ -1,6 +1,7 @@
 from interpriters.smart.SmartBasicInterpriter import SmartBasicInterpriter
 from interpriters.smart.SanDiskInterpriter import SmartSanDiskInterpriter
+from interpriters.nvme.NvmeBasicInterpriter import NvmeBasicInterpriter
 
 
-ALL = [SmartSanDiskInterpriter()]
-BASIC = [SmartBasicInterpriter()]
+SPECIAL_INTERPRITERS = [SmartSanDiskInterpriter()]
+BASIC = [SmartBasicInterpriter(), NvmeBasicInterpriter()]

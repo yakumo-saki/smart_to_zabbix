@@ -1,13 +1,16 @@
 import logging
 from interpriters.nvme.NvmeBaseInterpriter import NvmeBaseInterpriter
-from modules.const import Keys
+from modules.const import Keys, C
 
 logger = logging.getLogger(__name__)
 
-class BasicInterpriter(NvmeBaseInterpriter):
+class NvmeBasicInterpriter(NvmeBaseInterpriter):
     """
     最低限の解釈だけを行うInterpriter
     """
+
+    def isTargetDeviceType(self, data):
+        return (C.SMART_NVME_KEY in data)
 
     """
     解釈を行います。
@@ -15,7 +18,10 @@ class BasicInterpriter(NvmeBaseInterpriter):
     def parse(self, data):
         ret = self.basic_parse(data)
 
-        ret[Keys.SSD_BYTES_WRITTEN] = self.get_smart_raw_value(data, 233)
+        smart = data[C.SMART_NVME_KEY]
+
+        # minimum parse
+        ret[Keys.SSD_LIFESPAN] = smart[C.AVAIL_SPARE]
 
         return ret
 

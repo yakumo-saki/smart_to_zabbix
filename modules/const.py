@@ -1,3 +1,8 @@
+class C():
+    SMART_ATA_KEY = "ata_smart_attributes"
+    SMART_NVME_KEY = "nvme_smart_health_information_log"
+    AVAIL_SPARE = "available_spare"
+
 class Unit():
     KB = 1024
     MB = 1024 * 1024
