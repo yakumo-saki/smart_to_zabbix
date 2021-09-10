@@ -82,7 +82,7 @@ def find_interpriter(device_info):
 
     # basic
     for intp in interpriters.BASIC:
-      logger.warn(f"No matching basic interpriters => {dev} {device_info['model_name']}")
+      logger.warning(f"No matching basic interpriters => {dev} {device_info['model_name']}")
       if (intp.isTargetDeviceType(device_info)):
         return intp
 
