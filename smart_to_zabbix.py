@@ -1,5 +1,3 @@
-from pyzabbix import ZabbixMetric, ZabbixSender
-
 import interpriters
 import json
 import logging
