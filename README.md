@@ -12,6 +12,20 @@ WindowsとLinuxに対応しています。
 
 初回使用時はもう少し手順が必要です。 下の初回時の項目を参照してください。
 
+### 起動
+
+`python3 smart_to_zabbix.py`
+
+## 初めての場合
+
+### 一式を取得
+
+`git clone https://github.com/yakumo-saki/smart_to_zabbix.git`
+
+### 依存関係のインストール
+
+`pip3 install -r requirements.txt`
+
 ### 設定
 
 環境変数で設定可能です。設定可能項目は以下の通り。
@@ -24,6 +38,7 @@ WindowsとLinuxに対応しています。
 #### 設定方法
 
 以下の2つの方法があります。同時に行われた場合は、exportされた環境変数が優先されます。
+
 ##### exportで設定する 
 
 ```
@@ -37,16 +52,6 @@ export ZABBIX_HOST=test
 .env.sample ファイルを .env にコピーして内容を編集してください。
 .envファイルは存在しなくても動作します。
 
-### 起動
-
-`python3 smart_to_zabbix.py`
-
-## 初回のみ
-
-### 依存関係のインストール
-
-`pip3 install -r requirements.txt`
-
 ### Zabbixにテンプレートを登録する
 
 Zabbixの設定 → テンプレート → インポート（右上） を押す
@@ -54,7 +59,7 @@ Zabbixの設定 → テンプレート → インポート（右上） を押す
 
 ### ホストにテンプレートを紐付け
 
-`smart_to_zabbix by yakumo-saki` テンプレートをホストに紐付け。
+`smart_to_zabbix xxxxxxxx by yakumo-saki` テンプレートをホストに紐付け。
 （テンプレート名がアレだと思う場合はリネームしてください。）
 
 ## known issue
