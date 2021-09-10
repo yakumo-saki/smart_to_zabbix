@@ -71,12 +71,12 @@ def get_detail(device):
 
 def find_interpriter(device_info):
     # strict match
-    for intp in interpriters.ALL:
+    for intp in interpriters.SPECIAL_INTERPRITERS:
       if (intp.isTargetDeviceType(device_info) and intp.isTargetStrict(device_info)):
         return intp
 
     # loose match
-    for intp in interpriters.ALL:
+    for intp in interpriters.SPECIAL_INTERPRITERS:
       if (intp.isTargetDeviceType(device_info) and intp.isTargetLoose(device_info)):
         return intp
 
