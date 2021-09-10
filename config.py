@@ -19,5 +19,5 @@ LINUX_SMARTCTL_SCAN_CMD = ['sudo', 'smartctl', '--json', '--scan', '-d', 'sat', 
 LINUX_SMARTCTL_DETAIL_CMD = ['sudo', 'smartctl', '--json', '-a', '-d', 'sat', '-d', 'nvme', '-d', 'ata', '-d', 'scsi']
 
 # 
-WIN_SMARTCTL_SCAN_CMD = ['smartctl', '--json', '--scan', '-d', 'sat', '-d', 'nvme', '-d', 'ata', '-d', 'scsi']
-WIN_SMARTCTL_DETAIL_CMD = ['smartctl', '--json', '-a', '-d', 'sat', '-d', 'nvme', '-d', 'ata', '-d', 'scsi']
+WIN_SMARTCTL_SCAN_CMD = ['smartctl', '--json', '--scan', '-d', 'sat']
+WIN_SMARTCTL_DETAIL_CMD = ['smartctl', '--json', '-a', '-d', 'sat']
