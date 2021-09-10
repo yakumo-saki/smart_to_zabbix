@@ -25,7 +25,7 @@ def exec_smartctl_scan():
   if cmd[0] == 'sudo':
     logger.info("Asking your password by sudo") 
 
-  scan = subprocess.run(cmd, encoding='utf-8', stdout=subprocess.PIPE)
+  scan = subprocess.run(cmd, stdout=subprocess.PIPE)
   
   # logger.debug(scan.stdout)
   result = json.loads(scan.stdout)
@@ -93,13 +93,13 @@ def find_interpriter(device_info):
 if __name__ == '__main__':
 
   if (cfg.LOG_LEVEL.upper() == "ERROR"):
-    logging.basicConfig(encoding='utf-8', level=logging.ERROR)
+    logging.basicConfig(level=logging.ERROR)
   elif (cfg.LOG_LEVEL.upper() == "WARN"):
-    logging.basicConfig(encoding='utf-8', level=logging.WARN)
+    logging.basicConfig(level=logging.WARN)
   elif (cfg.LOG_LEVEL.upper() == "INFO"):
-    logging.basicConfig(encoding='utf-8', level=logging.INFO)
+    logging.basicConfig(level=logging.INFO)
   else:
-    logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
 
   logger.info("START")
 
