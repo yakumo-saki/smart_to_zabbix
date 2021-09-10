@@ -92,5 +92,5 @@ class NvmeBaseInterpriter(BaseInterpriter):
     """
     def parse(self, data):
         logger.error("BaseInterpriter can not do `parse`")
-        raise "Must override"
+        raise RuntimeError("Must override")
 

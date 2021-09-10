@@ -9,6 +9,10 @@ class SmartBasicInterpriter(SmartBaseInterpriter):
     最低限の解釈だけを行うInterpriter
     """
 
+
+
+
+
     """
     解釈を行います。
     """

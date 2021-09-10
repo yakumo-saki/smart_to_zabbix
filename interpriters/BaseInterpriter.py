@@ -13,9 +13,10 @@ class BaseInterpriter(object):
         pass
 
     """デバイスタイプ（SATA,SCSI,NVME)が処理対象かを返す
+    BasicInterpriterのみ使用。他は実装する必要なし
     """
     def isTargetDeviceType(self, data):
-        raise "MustOverride"
+        raise RuntimeError("MustOverride")
 
     """
     指定されたモデルが解釈可能か否かを返します。
@@ -23,7 +24,7 @@ class BaseInterpriter(object):
     解釈を依頼します。
     """
     def isTargetStrict(self, data):
-        raise "MustOverride"
+        raise RuntimeError("MustOverride")
 
 
     """
@@ -32,7 +33,7 @@ class BaseInterpriter(object):
     本メソッドを呼び、最初に見つかったInterpriterに解釈を依頼します。
     """
     def isTargetLoose(self, data):
-        raise "MustOverride"
+        raise RuntimeError("MustOverride")
 
 
     """
@@ -40,5 +41,5 @@ class BaseInterpriter(object):
     """
     def parse(self, data):
         logger.error("BaseInterpriter can not do `parse`")
-        raise "Must override"
+        raise RuntimeError("Must override")
 

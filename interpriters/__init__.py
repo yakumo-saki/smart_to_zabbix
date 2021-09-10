@@ -3,4 +3,4 @@ from interpriters.smart.SanDiskInterpriter import SmartSanDiskInterpriter
 
 
 ALL = [SmartSanDiskInterpriter()]
-BASIC = SmartBasicInterpriter()
+BASIC = [SmartBasicInterpriter()]
