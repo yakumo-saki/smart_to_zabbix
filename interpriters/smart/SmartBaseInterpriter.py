@@ -83,7 +83,9 @@ class SmartBaseInterpriter(BaseInterpriter):
         ret[Keys.SMART_STATUS_PASSED] = 1 if smartctl["smart_status"]["passed"] else 0
         ret[Keys.POWER_CYCLE] = smartctl["power_cycle_count"]
         ret[Keys.POWER_ON_HOURS] = smartctl["power_on_time"]["hours"]
-        ret[Keys.TEMPERATURE] = smartctl["temperature"]["current"]
+        
+        if ("temperature" in smartctl):
+            ret[Keys.TEMPERATURE] = smartctl["temperature"]["current"]
         
         return ret
 
