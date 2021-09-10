@@ -15,9 +15,9 @@ LOG_LEVEL = os.environ.get('LOG_LEVEL', "DEBUG")
 # 以下はZabbixテンプレートと整合性を取る必要がある
 
 #  
-LINUX_SMARTCTL_SCAN_CMD = ['sudo', 'smartctl', '--json', '--scan']
-LINUX_SMARTCTL_DETAIL_CMD = ['sudo', 'smartctl', '--json', '-a']
+LINUX_SMARTCTL_SCAN_CMD = ['sudo', 'smartctl', '--json', '--scan', '-d', 'sat', '-d', 'nvme', '-d', 'ata', '-d', 'scsi']
+LINUX_SMARTCTL_DETAIL_CMD = ['sudo', 'smartctl', '--json', '-a', '-d', 'sat', '-d', 'nvme', '-d', 'ata', '-d', 'scsi']
 
 # 
-WIN_SMARTCTL_SCAN_CMD = ['smartctl', '--json', '--scan']
-WIN_SMARTCTL_DETAIL_CMD = ['smartctl', '--json', '-a']
+WIN_SMARTCTL_SCAN_CMD = ['smartctl', '--json', '--scan', '-d', 'sat', '-d', 'nvme', '-d', 'ata', '-d', 'scsi']
+WIN_SMARTCTL_DETAIL_CMD = ['smartctl', '--json', '-a', '-d', 'sat', '-d', 'nvme', '-d', 'ata', '-d', 'scsi']
