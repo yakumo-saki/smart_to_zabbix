@@ -11,58 +11,74 @@ import modules.zabbix_smart as zbx_smart
 
 logger = logging.getLogger(__name__)
 
+
 def exec_smartctl_scan():
 
-  cmd = None
+    cmd = None
 
-  import platform
-  platform = platform.system()
-  if platform == 'Windows':
-    cmd = cfg.WIN_SMARTCTL_SCAN_CMD.copy()
-  else:
-    cmd = cfg.LINUX_SMARTCTL_SCAN_CMD.copy()
+    import platform
+    platform = platform.system()
+    if platform == 'Windows':
+        cmd = cfg.WIN_SMARTCTL_SCAN_CMD.copy()
+    else:
+        cmd = cfg.LINUX_SMARTCTL_SCAN_CMD.copy()
 
-  if cmd[0] == 'sudo':
-    logger.info("Asking your password by sudo") 
+    if cmd[0] == 'sudo':
+        logger.info("Asking your password by sudo")
 
-  scan = subprocess.run(cmd, stdout=subprocess.PIPE)
-  
-  # logger.debug(scan.stdout)
-  result = json.loads(scan.stdout)
-  #logger.debug(result)
-  return result
+    scan = subprocess.run(cmd, stdout=subprocess.PIPE)
+
+    # logger.debug(scan.stdout)
+    result = json.loads(scan.stdout)
+    # logger.debug(result)
+    return result
+
+
+def get_smartctl_device_info_cmd():
+    import platform
+    platform = platform.system()
+    if platform == 'Windows':
+        return cfg.WIN_SMARTCTL_DETAIL_CMD.copy()
+    else:
+        return cfg.LINUX_SMARTCTL_DETAIL_CMD.copy()
 
 
 def exec_smartctl_device_info(device_name):
 
-  run_cmd = None
+    run_cmd = get_smartctl_device_info_cmd()
+    run_cmd.append(device_name)
 
-  import platform
-  platform = platform.system()
-  if platform == 'Windows':
-    run_cmd = cfg.WIN_SMARTCTL_DETAIL_CMD.copy()
-  else:
-    run_cmd = cfg.LINUX_SMARTCTL_DETAIL_CMD.copy()
+    logger.debug(run_cmd)
+    device_info = subprocess.run(run_cmd, stdout=subprocess.PIPE)
 
-  run_cmd.append(device_name)
+    # retry with "-d sat" if device is behind usb converter
+    result = json.loads(device_info.stdout)
+    if ("messages" in result):
+        for msg in result["messages"]:
+            if ("Unknown USB bridge" in msg.string):
+                logger.debug("USB Bridge find. retry with -d sat.")
+                run_cmd = get_smartctl_device_info_cmd()
+                run_cmd.append("-d").append("sat")
+                run_cmd.append(device_name)
+                device_info = subprocess.run(run_cmd, stdout=subprocess.PIPE)
 
-  logger.debug(run_cmd)
-  device_info = subprocess.run(run_cmd, encoding='utf-8', stdout=subprocess.PIPE)
-  
-  #logger.debug(device_info.stdout)
-  result = json.loads(device_info.stdout)
-  #logger.debug(result)
-  return result
+    if (device_info.returncode != 0):
+        raise RuntimeError(f"smartctl return code != 0. Command: {run_cmd}")
+
+    # logger.debug(device_info.stdout)
+    result = json.loads(device_info.stdout)
+    # logger.debug(result)
+    return result
 
 
 def get_detail(device):
 
-     # sender data
+    # sender data
     metrics = []
     for d in device:
-      key = f"smartmontools.diskname[{d['KEY']}]"
-      logger.debugf("get_detail {key}")
-      #metrics.append(ZabbixMetric(ZABBIX_HOST, key, d["VALUE"]))
+        key = f"smartmontools.diskname[{d['KEY']}]"
+        logger.debugf("get_detail {key}")
+        #metrics.append(ZabbixMetric(ZABBIX_HOST, key, d["VALUE"]))
 
     zbx_parsed.send_to_zabbix(metrics)
 
@@ -72,58 +88,59 @@ def get_detail(device):
 def find_interpriter(device_info):
     # strict match
     for intp in interpriters.SPECIAL_INTERPRITERS:
-      if (intp.isTargetDeviceType(device_info) and intp.isTargetStrict(device_info)):
-        return intp
+        if (intp.isTargetDeviceType(device_info) and intp.isTargetStrict(device_info)):
+            return intp
 
     # loose match
     for intp in interpriters.SPECIAL_INTERPRITERS:
-      if (intp.isTargetDeviceType(device_info) and intp.isTargetLoose(device_info)):
-        return intp
+        if (intp.isTargetDeviceType(device_info) and intp.isTargetLoose(device_info)):
+            return intp
 
     # basic
     for intp in interpriters.BASIC:
-      if (intp.isTargetDeviceType(device_info)):
-        return intp
+        if (intp.isTargetDeviceType(device_info)):
+            return intp
 
-    logger.error(f"No interpriters (No basic interpriter applied) => {dev} {device_info['model_name']}")
+    logger.error(
+        f"No interpriters (No basic interpriter applied) => {dev} {device_info['model_name']}")
     raise RuntimeError("No interpriters")
 
 
 if __name__ == '__main__':
 
-  if (cfg.LOG_LEVEL.upper() == "ERROR"):
-    logging.basicConfig(level=logging.ERROR)
-  elif (cfg.LOG_LEVEL.upper() == "WARN"):
-    logging.basicConfig(level=logging.WARN)
-  elif (cfg.LOG_LEVEL.upper() == "INFO"):
-    logging.basicConfig(level=logging.INFO)
-  else:
-    logging.basicConfig(level=logging.DEBUG)
+    if (cfg.LOG_LEVEL.upper() == "ERROR"):
+        logging.basicConfig(level=logging.ERROR)
+    elif (cfg.LOG_LEVEL.upper() == "WARN"):
+        logging.basicConfig(level=logging.WARN)
+    elif (cfg.LOG_LEVEL.upper() == "INFO"):
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.DEBUG)
 
-  logger.info("START")
+    logger.info("START")
 
-  # scan_resultだけでdiscoveryを送信したいが、model_name等情報が足りない
-  scan_result = exec_smartctl_scan()
-   
-  full_results = {}
-  parsed_results = {}
+    # scan_resultだけでdiscoveryを送信したいが、model_name等情報が足りない
+    scan_result = exec_smartctl_scan()
 
-  for device in scan_result["devices"]:
-    dev = device["name"]
-    logger.info(f"Checking device {dev}")
-    device_info = exec_smartctl_device_info(device["name"])
-    full_results[dev] = device_info
+    full_results = {}
+    parsed_results = {}
 
-    interpriter = find_interpriter(device_info)
+    for device in scan_result["devices"]:
+        dev = device["name"]
+        logger.info(f"Checking device {dev}")
+        device_info = exec_smartctl_device_info(device["name"])
+        full_results[dev] = device_info
 
-    parsed_results[dev] = interpriter.parse(device_info)
+        interpriter = find_interpriter(device_info)
 
-  # パース成功したデータを扱う
-  zbx_parsed.send_device_discovery(parsed_results)
-  zbx_parsed.send_parsed_data(parsed_results)
+        parsed_results[dev] = interpriter.parse(device_info)
 
-  # SMART全データを送信する
-  zbx_smart.send_attribute_discovery(full_results)
-  zbx_smart.send_smart_data(full_results)
+    # パース成功したデータを扱う
+    zbx_parsed.send_device_discovery(parsed_results)
+    zbx_parsed.send_parsed_data(parsed_results)
 
-  logger.info("END")
+    # SMART全データを送信する
+    zbx_smart.send_attribute_discovery(full_results)
+    zbx_smart.send_smart_data(full_results)
+
+    logger.info("END")
