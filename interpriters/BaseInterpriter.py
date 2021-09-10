@@ -13,7 +13,7 @@ class BaseInterpriter(object):
         pass
 
     """デバイスタイプ（SATA,SCSI,NVME)が処理対象かを返す
-    BasicInterpriterのみ使用。他は実装する必要なし
+    一番最初に聞かれる
     """
     def isTargetDeviceType(self, data):
         raise RuntimeError("MustOverride")

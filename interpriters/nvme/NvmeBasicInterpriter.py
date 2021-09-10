@@ -9,8 +9,6 @@ class NvmeBasicInterpriter(NvmeBaseInterpriter):
     最低限の解釈だけを行うInterpriter
     """
 
-    def isTargetDeviceType(self, data):
-        return (C.SMART_NVME_KEY in data)
 
     """
     解釈を行います。
