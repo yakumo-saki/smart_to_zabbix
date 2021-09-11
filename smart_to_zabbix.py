@@ -56,7 +56,8 @@ def exec_smartctl_device_info(device_name):
     print(result)
     if (device_info.returncode != 0 and "smartctl" in result and "messages" in result["smartctl"]):
         for msg in result["smartctl"]["messages"]:
-            if ("Unknown USB bridge" in msg.string):
+            print(msg)
+            if ("Unknown USB bridge" in msg["string"]):
                 logger.debug("USB Bridge find. retry with -d sat.")
                 run_cmd = get_smartctl_device_info_cmd()
                 run_cmd.append("-d").append("sat")
