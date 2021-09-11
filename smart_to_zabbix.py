@@ -54,7 +54,7 @@ def exec_smartctl_device_info(device_name):
     # retry with "-d sat" if device is behind usb converter
     result = json.loads(device_info.stdout)
     print(result)
-    if (device_info.returncode != 0 and "smartctl" in result and "messages" in result):
+    if (device_info.returncode != 0 and "smartctl" in result and "messages" in result["smartctl"]):
         for msg in result["smartctl"]["messages"]:
             if ("Unknown USB bridge" in msg.string):
                 logger.debug("USB Bridge find. retry with -d sat.")
