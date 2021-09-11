@@ -37,10 +37,13 @@ def exec_smartctl_scan():
 def get_smartctl_device_info_cmd():
     import platform
     platform = platform.system()
+    cmd = None
     if platform == 'Windows':
-        return cfg.WIN_SMARTCTL_DETAIL_CMD.copy()
+        cmd = cfg.WIN_SMARTCTL_DETAIL_CMD.copy()
     else:
-        return cfg.LINUX_SMARTCTL_DETAIL_CMD.copy()
+        cmd = cfg.LINUX_SMARTCTL_DETAIL_CMD.copy()
+
+    return cmd
 
 
 def exec_smartctl_device_info(device_name):
@@ -56,7 +59,6 @@ def exec_smartctl_device_info(device_name):
     print(result)
     if (device_info.returncode != 0 and "smartctl" in result and "messages" in result["smartctl"]):
         for msg in result["smartctl"]["messages"]:
-            print(msg)
             if ("Unknown USB bridge" in msg["string"]):
                 logger.debug("USB Bridge find. retry with -d sat.")
                 run_cmd = get_smartctl_device_info_cmd()
