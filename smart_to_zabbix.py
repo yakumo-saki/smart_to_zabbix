@@ -86,7 +86,7 @@ def exec_smartctl_device_info(device_name):
 
 
     if (retcode != 0):
-        raise RuntimeError(f"smartctl return code = {device_info.returncode}. Command: " + json.dumps(cmd))
+        raise RuntimeError(f"smartctl return code = {retcode}.")
 
     return result
 
