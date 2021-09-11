@@ -54,8 +54,8 @@ def exec_smartctl_device_info(device_name):
     # retry with "-d sat" if device is behind usb converter
     result = json.loads(device_info.stdout)
     print(result)
-    if (device_info.returncode != 0 and "messages" in result):
-        for msg in result["messages"]:
+    if (device_info.returncode != 0 and "smartctl" in result and "messages" in result):
+        for msg in result["smartctl"]["messages"]:
             if ("Unknown USB bridge" in msg.string):
                 logger.debug("USB Bridge find. retry with -d sat.")
                 run_cmd = get_smartctl_device_info_cmd()
@@ -64,7 +64,7 @@ def exec_smartctl_device_info(device_name):
                 device_info = subprocess.run(run_cmd, stdout=subprocess.PIPE)
 
     if (device_info.returncode != 0):
-        raise RuntimeError(f"smartctl return code != 0. Command: {run_cmd}")
+        raise RuntimeError(f"smartctl return code != 0. Command: " + json.dumps(run_cmd))
 
     # logger.debug(device_info.stdout)
     result = json.loads(device_info.stdout)
