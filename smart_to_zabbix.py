@@ -82,6 +82,7 @@ def exec_smartctl_device_info(device_name):
         cmd.extend(["-d sat", device_name])
         retry_dev_info = subprocess.run(cmd, stdout=subprocess.PIPE)
         retcode = retry_dev_info.returncode
+        result = json.loads(retry_dev_info.stdout)
 
 
     if (retcode != 0):
