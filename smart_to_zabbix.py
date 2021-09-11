@@ -60,10 +60,9 @@ def exec_smartctl_device_info(device_name):
     if (device_info.returncode != 0 and "smartctl" in result and "messages" in result["smartctl"]):
         for msg in result["smartctl"]["messages"]:
             if ("Unknown USB bridge" in msg["string"]):
-                logger.debug("USB Bridge find. retry with -d sat.")
+                logger.info(f"{device_name}: USB Bridge find. retry with -d sat.")
                 run_cmd = get_smartctl_device_info_cmd()
-                run_cmd.append("-d").append("sat")
-                run_cmd.append(device_name)
+                run_cmd.extend(["-d", "sat", device_name])
                 device_info = subprocess.run(run_cmd, stdout=subprocess.PIPE)
 
     if (device_info.returncode != 0):
