@@ -46,32 +46,49 @@ def get_smartctl_device_info_cmd():
     return cmd
 
 
+def is_usb_device(smartctl_result):
+    if ("smartctl" not in smartctl_result):
+        return False
+
+    if ("messages" not in smartctl_result["smartctl"]):
+        return False
+
+    for msg in smartctl_result["smartctl"]["messages"]:
+        if ("Unknown USB bridge" in msg["string"]):
+            return True
+    
+    return False
+
+
 def exec_smartctl_device_info(device_name):
 
-    run_cmd = get_smartctl_device_info_cmd()
-    run_cmd.append(device_name)
+    result = None
+    retcode = 999
 
-    logger.debug(run_cmd)
-    device_info = subprocess.run(run_cmd, stdout=subprocess.PIPE)
+    if True:
+        cmd = get_smartctl_device_info_cmd()
+        cmd.append(device_name)
+        logger.debug(cmd)
+        device_info = subprocess.run(cmd, stdout=subprocess.PIPE)
+        retcode = device_info.returncode
+        result = json.loads(device_info.stdout)
+
+    print(result)
 
     # retry with "-d sat" if device is behind usb converter
-    result = json.loads(device_info.stdout)
-    print(result)
-    if (device_info.returncode != 0 and "smartctl" in result and "messages" in result["smartctl"]):
-        for msg in result["smartctl"]["messages"]:
-            if ("Unknown USB bridge" in msg["string"]):
-                logger.info(f"{device_name}: USB Bridge find. retry with -d sat.")
-                run_cmd = get_smartctl_device_info_cmd()
-                run_cmd.extend(["-d", "sat", device_name])
-                device_info = subprocess.run(run_cmd, stdout=subprocess.PIPE)
+    if (is_usb_device(result)):
+        logger.info(f"{device_name}: USB Bridge find. retry with -d sat.")
+        cmd = get_smartctl_device_info_cmd()
+        cmd.extend(["-d sat", device_name])
+        retry_dev_info = subprocess.run(cmd, stdout=subprocess.PIPE)
+        retcode = retry_dev_info.returncode
 
-    if (device_info.returncode != 0):
-        raise RuntimeError(f"smartctl return code != 0. Command: " + json.dumps(run_cmd))
 
-    # logger.debug(device_info.stdout)
-    result = json.loads(device_info.stdout)
-    # logger.debug(result)
+    if (retcode != 0):
+        raise RuntimeError(f"smartctl return code = {device_info.returncode}. Command: " + json.dumps(cmd))
+
     return result
+
 
 
 def get_detail(device):
