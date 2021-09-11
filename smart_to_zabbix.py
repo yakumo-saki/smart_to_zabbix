@@ -69,20 +69,21 @@ def exec_smartctl_device_info(device_name):
         cmd = get_smartctl_device_info_cmd()
         cmd.append(device_name)
         logger.debug(cmd)
-        device_info = subprocess.run(cmd, stdout=subprocess.PIPE)
-        retcode = device_info.returncode
-        result = json.loads(device_info.stdout)
+        proc_info = subprocess.run(cmd, stdout=subprocess.PIPE)
+        retcode = proc_info.returncode
+        result = json.loads(proc_info.stdout)
 
     print(result)
 
     # retry with "-d sat" if device is behind usb converter
     if (is_usb_device(result)):
-        logger.info(f"{device_name}: USB Bridge find. retry with -d sat.")
+        logger.info(f"{device_name} USB Bridge find. retry with -d sat.")
         cmd = get_smartctl_device_info_cmd()
         cmd.extend(["-d sat", device_name])
-        retry_dev_info = subprocess.run(cmd, stdout=subprocess.PIPE)
-        retcode = retry_dev_info.returncode
-        result = json.loads(retry_dev_info.stdout)
+        logger.infoa(cmd)
+        proc_info = subprocess.run(cmd, stdout=subprocess.PIPE)
+        retcode = proc_info.returncode
+        result = json.loads(proc_info.stdout)
 
 
     if (retcode != 0):
