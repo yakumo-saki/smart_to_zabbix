@@ -82,7 +82,6 @@ def send_smart_data(data):
     elif ("nvme_smart_health_information_log" in detail):
       results = create_value_list_nvme(dev, detail["nvme_smart_health_information_log"])
 
-  logger.debug(results)
   sender_data = {"request": "sender data", "data": results}
   #valueStr = json.dumps({"data": discovery_result})
   # print(json.dumps(sender_data, indent=2))
