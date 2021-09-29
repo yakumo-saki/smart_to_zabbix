@@ -75,14 +75,14 @@ def exec_smartctl_device_info(device_name):
         if (retcode > 4):  # 0 = ok , 1 = maybe USB
             raise RuntimeError(f"smartctl return code = {retcode}. cmd = {cmd}")
 
-    print(result)
+    # print(result)
 
     # retry with "-d sat" if device is behind usb converter
     if (is_usb_device(result)):
         logger.info(f"{device_name} USB Bridge find. retry with -d sat.")
         cmd = get_smartctl_device_info_cmd()
         cmd.extend(["-d", "sat", device_name])
-        logger.info(cmd)
+        logger.debug(cmd)
         proc_info = subprocess.run(cmd, stdout=subprocess.PIPE)
         retcode = proc_info.returncode
         result = json.loads(proc_info.stdout)

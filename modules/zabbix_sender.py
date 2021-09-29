@@ -55,7 +55,7 @@ def send_to_zabbix_raw(zabbix_server, zabbix_port, json_text):
       response_len = struct.unpack('<Q', response_header[5:])[0]
       response_body = connection.recv(response_len)
       result = json.loads(response_body.decode("utf-8"))
-      logger.info('Data received: %s', result)
+      logger.debug('Data received: %s', result)
 
   try:
       connection.close()

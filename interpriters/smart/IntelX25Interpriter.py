@@ -26,10 +26,8 @@ class IntelX25Interpriter(SmartBaseInterpriter):
         logger.debug("IntelX25")
         ret = self.basic_parse(data)
 
-        # 233 Media Wearout Indicator
         ret[Keys.SSD_LIFESPAN] = self.get_smart_value(data, 233)
 
-        # 241 Total_LBAs_Written は名前に反してそのままGB単位
         hostWrites = self.get_smart_raw_value(data, 225)
         ret[Keys.SSD_BYTES_WRITTEN] = (hostWrites * 32 * Unit.MB)
 
