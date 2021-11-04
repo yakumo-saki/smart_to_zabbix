@@ -14,7 +14,8 @@ class IntelX25Interpriter(SmartBaseInterpriter):
     #     pass
 
     def isTargetStrict(self, data):
-        if (data["model_family"].startswith("Intel X18-M/X25-M/X25-V G2 SSDs")):
+        # model_familyはないかもしれない。
+        if (data.get("model_family", "").startswith("Intel X18-M/X25-M/X25-V G2 SSDs")):
             return True
 
         return False
