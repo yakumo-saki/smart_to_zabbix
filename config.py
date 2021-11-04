@@ -1,10 +1,7 @@
 import os
-from os.path import join, dirname
+import load_dotenv
 
-# load_dotenvはファイルが存在しなくても素通りする
-# load_dotenvはすでにexportされている環境変数を上書きしない
-from dotenv import load_dotenv
-load_dotenv(join(dirname(__file__), '.env'))
+load_dotenv.load_env_from_file()
 
 # 環境変数を読む。 
 ZABBIX_SERVER = os.environ.get('ZABBIX_SERVER', None)
