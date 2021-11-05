@@ -12,6 +12,8 @@ import modules.zabbix_smart as zbx_smart
 logger = logging.getLogger(__name__)
 
 
+# smartctl --scan を実行して結果を返す
+#
 def exec_smartctl_scan():
 
     cmd = None
@@ -46,15 +48,32 @@ def get_smartctl_device_info_cmd():
     return cmd
 
 
-def is_usb_device(smartctl_result):
+# smartctl のエラーメッセージのリストを返します。
+# @return [{"string": "this is message", "severity": "error"}]
+def get_smartctl_messages_from_result(smartctl_result):
     if ("smartctl" not in smartctl_result):
-        return False
+        return None
 
     if ("messages" not in smartctl_result["smartctl"]):
-        return False
+        return None
 
-    for msg in smartctl_result["smartctl"]["messages"]:
+    return smartctl_result["smartctl"]["messages"]
+
+def is_usb_device(smartctl_result):
+    msgs = get_smartctl_messages_from_result(smartctl_result)
+
+    for msg in msgs:
         if ("Unknown USB bridge" in msg["string"]):
+            return True
+    
+    return False
+
+def is_megaraid_device(smartctl_result):
+
+    msgs = get_smartctl_messages_from_result(smartctl_result)
+
+    for msg in msgs:
+        if ("DELL or MegaRaid controller" in msg["string"]):
             return True
     
     return False
@@ -65,6 +84,7 @@ def exec_smartctl_device_info(device_name):
     result = None
     retcode = 999
 
+    # call smartctl without any option
     if True:
         cmd = get_smartctl_device_info_cmd()
         cmd.append(device_name)
@@ -72,10 +92,14 @@ def exec_smartctl_device_info(device_name):
         proc_info = subprocess.run(cmd, stdout=subprocess.PIPE)
         retcode = proc_info.returncode
         result = json.loads(proc_info.stdout)
-        if (retcode > 4):  # 0 = ok , 1 = maybe USB
+        if (retcode > 4):  # 0 = ok , 1 = maybe USB , 2 = megaraid
             raise RuntimeError(f"smartctl return code = {retcode}. cmd = {cmd}")
 
     # print(result)
+
+    # Device is MegaRaid volume? then, skip it. (check it later by /dev/bus/0, megaraid,N)
+    if (is_megaraid_device(result)):
+        return None
 
     # retry with "-d sat" if device is behind usb converter
     if (is_usb_device(result)):
@@ -142,6 +166,8 @@ if __name__ == '__main__':
     logger.info("START")
 
     # scan_resultだけでdiscoveryを送信したいが、model_name等情報が足りない
+    # のですべての結果を取得するまでdevice discoveryを送信できない
+    # scan_resultは明細を取るためだけに使用されて、zabbixへのデータ送信には使われない。
     scan_result = exec_smartctl_scan()
 
     full_results = {}
@@ -151,17 +177,21 @@ if __name__ == '__main__':
         dev = device["name"]
         logger.info(f"Checking device {dev}")
         device_info = exec_smartctl_device_info(device["name"])
+        if device_info == None:
+            # megaraid device
+            continue
+
         full_results[dev] = device_info
-
         interpriter = find_interpriter(device_info)
-
         parsed_results[dev] = interpriter.parse(device_info)
 
-    # パース成功したデータを扱う
+    # デバイスディスカバリを送信
     zbx_parsed.send_device_discovery(parsed_results)
+
+    # パース成功したデータを扱う
     zbx_parsed.send_parsed_data(parsed_results)
 
-    # SMART全データを送信する
+    # SMART discovery と SMART全データを送信する
     zbx_smart.send_attribute_discovery(full_results)
     zbx_smart.send_smart_data(full_results)
 
