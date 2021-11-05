@@ -22,10 +22,6 @@ WindowsとLinuxに対応しています。
 
 `git clone https://github.com/yakumo-saki/smart_to_zabbix.git`
 
-### 依存関係のインストール
-
-`pip3 install -r requirements.txt`
-
 ### 設定
 
 環境変数で設定可能です。設定可能項目は以下の通り。
