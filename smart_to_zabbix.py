@@ -5,6 +5,7 @@ import subprocess
 from pprint import pprint
 
 import config as cfg
+import smartctl_util as smutil
 
 import modules.zabbix_parsed as zbx_parsed
 import modules.zabbix_smart as zbx_smart
@@ -48,37 +49,6 @@ def get_smartctl_device_info_cmd():
     return cmd
 
 
-# smartctl のエラーメッセージのリストを返します。
-# @return [{"string": "this is message", "severity": "error"}]
-def get_smartctl_messages_from_result(smartctl_result):
-    if ("smartctl" not in smartctl_result):
-        return None
-
-    if ("messages" not in smartctl_result["smartctl"]):
-        return None
-
-    return smartctl_result["smartctl"]["messages"]
-
-def is_usb_device(smartctl_result):
-    msgs = get_smartctl_messages_from_result(smartctl_result)
-
-    for msg in msgs:
-        if ("Unknown USB bridge" in msg["string"]):
-            return True
-    
-    return False
-
-def is_megaraid_device(smartctl_result):
-
-    msgs = get_smartctl_messages_from_result(smartctl_result)
-
-    for msg in msgs:
-        if ("DELL or MegaRaid controller" in msg["string"]):
-            return True
-    
-    return False
-
-
 def exec_smartctl_device_info(device_name):
 
     result = None
@@ -98,11 +68,11 @@ def exec_smartctl_device_info(device_name):
     # print(result)
 
     # Device is MegaRaid volume? then, skip it. (check it later by /dev/bus/0, megaraid,N)
-    if (is_megaraid_device(result)):
+    if (smutil.is_megaraid_device(result)):
         return None
 
     # retry with "-d sat" if device is behind usb converter
-    if (is_usb_device(result)):
+    if (smutil.is_usb_device(result)):
         logger.info(f"{device_name} USB Bridge find. retry with -d sat.")
         cmd = get_smartctl_device_info_cmd()
         cmd.extend(["-d", "sat", device_name])
