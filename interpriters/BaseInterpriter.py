@@ -36,6 +36,19 @@ class BaseInterpriter(object):
         raise RuntimeError("MustOverride")
 
 
+    # smartctlから値を安全に取得します。
+    def getValue(self, smartctl, key1, key2 = None):
+        v1 = smartctl.get(key1) 
+        if (v1 == None): 
+            return None
+        elif (key2 == None):
+            #print(v1)
+            return v1
+        
+        v2 = v1.get(key2)
+        #print(v2)
+        return v2
+
     """
     解釈を行います。
     """

@@ -74,16 +74,18 @@ class NvmeBaseInterpriter(BaseInterpriter):
     """
     def basic_parse(self, smartctl):
         ret = get_empty_data()
-        ret[Keys.DISK_MODEL] = smartctl["model_name"]
-        ret[Keys.DISK_TYPE] = smartctl["device"]["type"] # sat scs? nvm?
-        ret[Keys.DISK_PROTOCOL] = smartctl["device"]["protocol"] # ATA SAS? NVM?
-        ret[Keys.DISK_ROTATION_RATE] = smartctl["rotation_rate"] # SSD = 0, HDD = 5400 7200 10000 15000
-        ret[Keys.SERIAL_NUMBER] = smartctl["serial_number"]
+        ret[Keys.DISK_MODEL] = self.getValue(smartctl, "model_name")
+        ret[Keys.DISK_TYPE] = self.getValue(smartctl,"device", "type") # sat scsi? nvme
+        ret[Keys.DISK_PROTOCOL] = self.getValue(smartctl, "device", "protocol") # ATA SAS? NVM?      
+        ret[Keys.SERIAL_NUMBER] = self.getValue(smartctl, "serial_number")
         ret[Keys.SMART_STATUS_PASSED] = 1 if smartctl["smart_status"]["passed"] else 0
-        ret[Keys.POWER_CYCLE] = smartctl["power_cycle_count"]
-        ret[Keys.POWER_ON_HOURS] = smartctl["power_on_time"]["hours"]
-        ret[Keys.TEMPERATURE] = smartctl["temperature"]["current"]
-        
+        ret[Keys.POWER_CYCLE] = self.getValue(smartctl, "power_cycle_count")
+        ret[Keys.POWER_ON_HOURS] = self.getValue(smartctl,"power_on_time", "hours")
+        ret[Keys.TEMPERATURE] = self.getValue(smartctl, "temperature","current")
+
+        # NVMe は基本的にSSDなので回転数は存在しない
+        # ret[Keys.DISK_ROTATION_RATE] = self.getValue(smartctl, "rotation_rate") # SSD = 0, HDD = 5400 7200 10000 15000
+
         return ret
 
 
