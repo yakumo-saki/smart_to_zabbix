@@ -49,7 +49,7 @@ def get_smartctl_device_info_cmd():
     return cmd
 
 
-def exec_smartctl_device_info(device_name):
+def exec_smartctl_device_info(device_name, device_type):
 
     result = None
     retcode = 999
@@ -59,6 +59,11 @@ def exec_smartctl_device_info(device_name):
         cmd = get_smartctl_device_info_cmd()
         cmd.append(device_name)
         logger.debug(cmd)
+
+        if device_type.startswith("megaraid"):
+            # megaraid
+            cmd.extend(["-d", device_type])
+        
         proc_info = subprocess.run(cmd, stdout=subprocess.PIPE)
         retcode = proc_info.returncode
         result = json.loads(proc_info.stdout)
@@ -106,7 +111,7 @@ def get_detail(device):
     return None
 
 
-def find_interpriter(device_info) -> interpriters.BaseInterpriter:
+def find_interpriter(device_info):
     # strict match
     for intp in interpriters.SPECIAL_INTERPRITERS:
         if (intp.isTargetDeviceType(device_info) and intp.isTargetStrict(device_info)):
@@ -151,7 +156,7 @@ if __name__ == '__main__':
     for device in scan_result["devices"]:
         dev = device["name"]
         logger.info(f"Checking device {dev}")
-        device_info = exec_smartctl_device_info(device["name"])
+        device_info = exec_smartctl_device_info(device["name"], device["type"])
         if device_info == None:
             # megaraid device
             continue
