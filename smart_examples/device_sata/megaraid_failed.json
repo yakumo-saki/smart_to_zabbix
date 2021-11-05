@@ -1,0 +1,29 @@
+{
+    "json_format_version": [
+      1,
+      0
+    ],
+    "smartctl": {
+      "version": [
+        7,
+        2
+      ],
+      "svn_revision": "5155",
+      "platform_info": "x86_64-linux-5.11.22-5-pve",
+      "build_info": "(local build)",
+      "argv": [
+        "smartctl",
+        "-a",
+        "/dev/sda",
+        "--json"
+      ],
+      "messages": [
+        {
+          "string": "Smartctl open device: /dev/sda failed: DELL or MegaRaid controller, please try adding '-d megaraid,N'",
+          "severity": "error"
+        }
+      ],
+      "exit_status": 2
+    }
+  }
+  
