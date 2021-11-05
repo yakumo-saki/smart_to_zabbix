@@ -10,24 +10,14 @@ import tests.const as const
 import smart_to_zabbix as main
 
 class TestInterpriters(unittest.TestCase):
-
-    files = []
-
-    def setUp(self):
-        cwd = os.getcwd()
-        globspec = os.path.join(cwd, const.EXAMPLE_DEVICE_DIR, "*.json")
-        self.files = glob.glob(globspec)
-
-
     def test_find_interpriter(self):
         """ 
         find_interpriterの単体テスト
+        interpriter判定時に存在しない項目を決め打ちで読みに行ってないかのテスト
         """
 
-        for filename in self.files:
-            if util.is_not_test_target(filename):
-                continue
-
+        files = util.get_all_json_paths()
+        for filename in files:
             with self.subTest(filename=filename):
                 with open(filename) as f:
                     jsonStr = f.read()
@@ -39,5 +29,20 @@ class TestInterpriters(unittest.TestCase):
                 self.assertTrue(True)
     
 
-    def test_find_interpriter(self):
-        
+    def test_interpriter(self):
+        """ 
+        interpriterのparse単体テスト
+        """
+
+        files = util.get_all_json_paths()
+        for filename in files:
+            with self.subTest(filename=filename):
+                with open(filename) as f:
+                    jsonStr = f.read()
+
+                detail = json.loads(jsonStr)
+
+                intp = main.find_interpriter(detail)
+                parsed = intp.parse(detail)
+                self.assertEqual(parsed[Keys.DISK_MODEL], parsed["model_name"])
+ 

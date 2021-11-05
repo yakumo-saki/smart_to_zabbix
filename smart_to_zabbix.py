@@ -106,7 +106,7 @@ def get_detail(device):
     return None
 
 
-def find_interpriter(device_info):
+def find_interpriter(device_info) -> interpriters.BaseInterpriter:
     # strict match
     for intp in interpriters.SPECIAL_INTERPRITERS:
         if (intp.isTargetDeviceType(device_info) and intp.isTargetStrict(device_info)):
