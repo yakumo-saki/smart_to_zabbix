@@ -5,6 +5,7 @@ import json
 import glob
 import tests.util as util
 import os
+import tests.const as const
 
 class TestZabbixSmartListSata(unittest.TestCase):
 
@@ -12,7 +13,7 @@ class TestZabbixSmartListSata(unittest.TestCase):
 
     def setUp(self):
         cwd = os.getcwd()
-        globspec = os.path.join(cwd, "smart_examples/device_sata/*.json")
+        globspec = os.path.join(cwd, const.EXAMPLE_DEV_SATA_DIR,"*.json")
         self.files = glob.glob(globspec)
 
 

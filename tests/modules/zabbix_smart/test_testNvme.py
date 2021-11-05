@@ -5,6 +5,7 @@ import json
 import glob
 import tests.util as util
 import os
+import tests.const as const
 
 class TestZabbixSmartListNvme(unittest.TestCase):
 
@@ -12,7 +13,7 @@ class TestZabbixSmartListNvme(unittest.TestCase):
 
     def setUp(self):
         cwd = os.getcwd()
-        globspec = os.path.join(cwd, "smart_examples/device_nvme/*.json")
+        globspec = os.path.join(cwd, const.EXAMPLE_DEV_NVME_DIR,"*.json")
         self.files = glob.glob(globspec)
 
 
