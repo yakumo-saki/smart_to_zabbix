@@ -8,11 +8,14 @@ from modules.zabbix_sender import send_to_zabbix
 
 logger = logging.getLogger(__name__)
 
+SMART_ATTR_KEY = "ata_smart_attributes"
+NVME_ATTR_KEY = "nvme_smart_health_information_log"
 
-"""zabbixにS.M.A.R.T Attribute LLDデータを送信します。
-Attribute LLDとは要するにSMART値すべて
-"""
 def send_attribute_discovery(result):
+  """
+  zabbixにS.M.A.R.T Attribute LLDデータを送信します。
+  Attribute LLDとは要するにSMART値すべて
+  """
 
   logger.info("Sending S.M.A.R.T attribute discovery to zabbix")
 
@@ -22,10 +25,10 @@ def send_attribute_discovery(result):
     detail = result[device]
 
     discovery = {AttrKey.DEV_NAME: device, AttrKey.DISK_NAME: detail["model_name"]}
-    if ("ata_smart_attributes" in detail):
-      discovery_result = create_attribute_list_non_nvme(discovery, detail["ata_smart_attributes"])
-    elif ("nvme_smart_health_information_log" in detail):
-      discovery_result = create_attribute_list_nvme(discovery, detail["nvme_smart_health_information_log"])
+    if (SMART_ATTR_KEY in detail):
+      discovery_result = create_attribute_list_non_nvme(discovery, detail[SMART_ATTR_KEY])
+    elif (NVME_ATTR_KEY in detail):
+      discovery_result = create_attribute_list_nvme(discovery, detail[NVME_ATTR_KEY])
     
   data = {"request": "sender data", "data":[]}
   valueStr = json.dumps({"data": discovery_result})

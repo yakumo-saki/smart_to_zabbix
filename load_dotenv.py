@@ -22,7 +22,7 @@ def load_env_from_file():
 def set_os_variable(name, value):
     v = os.environ.get(name, None)
     if v == None:
-        print("[.env] set", name, "=", value)
+        # print("[.env] set", name, "=", value)
         os.environ[name] = value
 
 
