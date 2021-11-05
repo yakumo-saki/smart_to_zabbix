@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # smartctl のエラーメッセージのリストを返します。
@@ -12,21 +15,23 @@ def get_smartctl_messages_from_result(smartctl_result):
 
     return smartctl_result["smartctl"]["messages"]
 
-def is_usb_device(smartctl_result):
+# エラーメッセージにパラメタの単語が含まれたものが一つでもあるか否かを返します。
+def _message_contains(smartctl_result, checkString):
     msgs = get_smartctl_messages_from_result(smartctl_result)
+    if msgs == None:
+        return False
 
     for msg in msgs:
-        if ("Unknown USB bridge" in msg["string"]):
+        if (checkString in msg["string"]):
             return True
-    
+
     return False
+
+def is_usb_device(smartctl_result):
+    return _message_contains(smartctl_result, "Unknown USB bridge")
 
 def is_megaraid_device(smartctl_result):
+    return _message_contains(smartctl_result, "DELL or MegaRaid controller")
 
-    msgs = get_smartctl_messages_from_result(smartctl_result)
-
-    for msg in msgs:
-        if ("DELL or MegaRaid controller" in msg["string"]):
-            return True
-    
-    return False
+def is_unknown_device(smartctl_result):
+    return _message_contains(smartctl_result, "Unable to detect device type")

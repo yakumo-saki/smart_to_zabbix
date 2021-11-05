@@ -67,6 +67,10 @@ def exec_smartctl_device_info(device_name):
 
     # print(result)
 
+    # Unable to Detect
+    if (smutil.is_unknown_device):
+        return None
+
     # Device is MegaRaid volume? then, skip it. (check it later by /dev/bus/0, megaraid,N)
     if (smutil.is_megaraid_device(result)):
         return None
