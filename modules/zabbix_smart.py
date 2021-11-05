@@ -14,10 +14,11 @@ Attribute LLDとは要するにSMART値すべて
 """
 def send_attribute_discovery(result):
 
-  logger.info("Sending attribute discovery to zabbix")
+  logger.info("Sending S.M.A.R.T attribute discovery to zabbix")
 
   discovery_result = []
   for device in result:
+    logger.info("Listing S.M.A.R.T attributes: " + device)
     detail = result[device]
 
     discovery = {AttrKey.DEV_NAME: device, AttrKey.DISK_NAME: detail["model_name"]}
@@ -59,7 +60,9 @@ def create_attribute_list_nvme(discovery_base, smart_attributes):
     discovery = copy.deepcopy(discovery_base)
 
     if key == "temperature_sensors":
-      for val, idx in smart_attributes["temperature_sensors"]:
+      for _, idx in smart_attributes[key]:
+        # temperature_sensorsの名前の通り、複数の温度センサーがあると値が複数入るので
+        # temperature_sensors1,2 のような名前に展開する
         discovery[AttrKey.ATTR_NAME] = f"temperature_sensors{idx}"
         discovery[AttrKey.ATTR_ID] = f"temperature_sensors{idx}"
     else:
@@ -75,6 +78,7 @@ def send_smart_data(data):
 
   results = []
   for dev in data:
+    logger.info("Listing S.M.A.R.T data: " + dev)
     detail = data[dev]  # /dev/sda
     
     if ("ata_smart_attributes" in detail):
@@ -112,11 +116,13 @@ def create_value_list_non_nvme(dev, smart_attributes):
 
 def create_value_list_nvme(dev, smart_attributes):
   results = []
+  print(smart_attributes)
   for key in smart_attributes:
 
     # NVMe にはthreshouldやworstはなく、valueだけ
     if key == "temperature_sensors":
-      for val, idx in smart_attributes["temperature_sensors"]:
+      # temperature_sensorsの複数の値は 末尾に連番をつけて展開されている
+      for val, idx in smart_attributes[key]:
         key = AttrKey.VALUE_KEY.format(dev, f"temperature_sensors{idx}")
         results.append({"host": cfg.ZABBIX_HOST, "key": key, "value": val})
     else:
