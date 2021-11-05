@@ -132,6 +132,27 @@ def find_interpriter(device_info):
     raise RuntimeError("No interpriters")
 
 
+def assign_device_id(device_info):
+    """       
+    デバイスを一意に識別できるIDを決める
+    /dev/sda などは認識順なので一意ではないのでできれば使いたくない
+    """
+    # "device": {
+    #   "name": "/dev/bus/0",
+    #   "info_name": "/dev/bus/0 [megaraid_disk_00] [SAT]",
+    #   "type": "sat+megaraid,0",
+    # },
+    if (device_info.get("serial_number") != None):
+        return device_info["serial_number"]   # シリアル番号があればそれ
+
+    # fallback
+    dev = device_info["device"]  # さすがにこれがないのは無い
+    if dev["name"].startswith("/dev/bus/"):
+        return dev["name"] + dev["type"]
+        
+    return dev["name"]
+
+
 if __name__ == '__main__':
 
     if (cfg.LOG_LEVEL.upper() == "ERROR"):
@@ -155,15 +176,18 @@ if __name__ == '__main__':
 
     for device in scan_result["devices"]:
         dev = device["name"]
-        logger.info(f"Checking device {dev}")
-        device_info = exec_smartctl_device_info(device["name"], device["type"])
+        dev_type = device["type"]
+        logger.info(f"Checking device {dev} type {dev_type}")
+        device_info = exec_smartctl_device_info(dev, dev_type)
         if device_info == None:
             # megaraid device
             continue
 
-        full_results[dev] = device_info
+        dev_id = assign_device_id(device_info)
+        
+        full_results[dev_id] = device_info
         interpriter = find_interpriter(device_info)
-        parsed_results[dev] = interpriter.parse(device_info)
+        parsed_results[dev_id] = interpriter.parse(device_info)
 
     # デバイスディスカバリを送信
     zbx_parsed.send_device_discovery(parsed_results)
