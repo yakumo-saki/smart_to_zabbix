@@ -1,0 +1,112 @@
+{
+    "json_format_version": [
+      1,
+      0
+    ],
+    "smartctl": {
+      "version": [
+        7,
+        2
+      ],
+      "svn_revision": "5155",
+      "platform_info": "x86_64-linux-5.11.22-5-pve",
+      "build_info": "(local build)",
+      "argv": [
+        "smartctl",
+        "-a",
+        "--json",
+        "/dev/nvme0"
+      ],
+      "exit_status": 0
+    },
+    "device": {
+      "name": "/dev/nvme0",
+      "info_name": "/dev/nvme0",
+      "type": "nvme",
+      "protocol": "NVMe"
+    },
+    "model_name": "Samsung SSD 980 500GB",
+    "serial_number": "**************",
+    "firmware_version": "1B4QFXO7",
+    "nvme_pci_vendor": {
+      "id": 5197,
+      "subsystem_id": 5197
+    },
+    "nvme_ieee_oui_identifier": 9528,
+    "nvme_total_capacity": 500107862016,
+    "nvme_unallocated_capacity": 0,
+    "nvme_controller_id": 5,
+    "nvme_version": {
+      "string": "1.4",
+      "value": 66560
+    },
+    "nvme_number_of_namespaces": 1,
+    "nvme_namespaces": [
+      {
+        "id": 1,
+        "size": {
+          "blocks": 976773168,
+          "bytes": 500107862016
+        },
+        "capacity": {
+          "blocks": 976773168,
+          "bytes": 500107862016
+        },
+        "utilization": {
+          "blocks": 926157400,
+          "bytes": 474192588800
+        },
+        "formatted_lba_size": 512,
+        "eui64": {
+          "oui": 9528,
+          "ext_id": 919419988413
+        }
+      }
+    ],
+    "user_capacity": {
+      "blocks": 976773168,
+      "bytes": 500107862016
+    },
+    "logical_block_size": 512,
+    "local_time": {
+      "time_t": 1636098727,
+      "asctime": "Fri Nov  5 16:52:07 2021 JST"
+    },
+    "smart_status": {
+      "passed": true,
+      "nvme": {
+        "value": 0
+      }
+    },
+    "nvme_smart_health_information_log": {
+      "critical_warning": 0,
+      "temperature": 47,
+      "available_spare": 100,
+      "available_spare_threshold": 10,
+      "percentage_used": 1,
+      "data_units_read": 6314332,
+      "data_units_written": 10523036,
+      "host_reads": 29394126,
+      "host_writes": 159999836,
+      "controller_busy_time": 752,
+      "power_cycles": 52,
+      "power_on_hours": 361,
+      "unsafe_shutdowns": 10,
+      "media_errors": 0,
+      "num_err_log_entries": 0,
+      "warning_temp_time": 40,
+      "critical_comp_time": 0,
+      "temperature_sensors": [
+        47,
+        53
+      ]
+    },
+    "temperature": {
+      "current": 47
+    },
+    "power_cycle_count": 52,
+    "power_on_time": {
+      "hours": 361
+    }
+  }
+  

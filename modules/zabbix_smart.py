@@ -8,23 +8,27 @@ from modules.zabbix_sender import send_to_zabbix
 
 logger = logging.getLogger(__name__)
 
+SMART_ATTR_KEY = "ata_smart_attributes"
+NVME_ATTR_KEY = "nvme_smart_health_information_log"
 
-"""zabbixにS.M.A.R.T Attribute LLDデータを送信します。
-Attribute LLDとは要するにSMART値すべて
-"""
 def send_attribute_discovery(result):
+  """
+  zabbixにS.M.A.R.T Attribute LLDデータを送信します。
+  Attribute LLDとは要するにSMART値すべて
+  """
 
-  logger.info("Sending attribute discovery to zabbix")
+  logger.info("Sending S.M.A.R.T attribute discovery to zabbix")
 
   discovery_result = []
   for device in result:
+    logger.info("Listing S.M.A.R.T attributes: " + device)
     detail = result[device]
 
     discovery = {AttrKey.DEV_NAME: device, AttrKey.DISK_NAME: detail["model_name"]}
-    if ("ata_smart_attributes" in detail):
-      discovery_result = create_attribute_list_non_nvme(discovery, detail["ata_smart_attributes"])
-    elif ("nvme_smart_health_information_log" in detail):
-      discovery_result = create_attribute_list_nvme(discovery, detail["nvme_smart_health_information_log"])
+    if (SMART_ATTR_KEY in detail):
+      discovery_result = create_attribute_list_non_nvme(discovery, detail[SMART_ATTR_KEY])
+    elif (NVME_ATTR_KEY in detail):
+      discovery_result = create_attribute_list_nvme(discovery, detail[NVME_ATTR_KEY])
     
   data = {"request": "sender data", "data":[]}
   valueStr = json.dumps({"data": discovery_result})
@@ -51,15 +55,17 @@ def create_attribute_list_non_nvme(discovery_base, smart_attributes):
   return result
 
 
-def create_attribute_list_nvme(discovery_base, smart_attributes):
+def create_attribute_list_nvme(discovery_base, nvme_health_info):
   import copy 
 
   result = []
-  for key in smart_attributes:
+  for key in nvme_health_info:
     discovery = copy.deepcopy(discovery_base)
 
     if key == "temperature_sensors":
-      for val, idx in smart_attributes["temperature_sensors"]:
+      for idx, _ in enumerate(nvme_health_info[key]):
+        # temperature_sensorsの名前の通り、複数の温度センサーがあると値が複数入るので
+        # temperature_sensors1,2 のような名前に展開する
         discovery[AttrKey.ATTR_NAME] = f"temperature_sensors{idx}"
         discovery[AttrKey.ATTR_ID] = f"temperature_sensors{idx}"
     else:
@@ -75,6 +81,7 @@ def send_smart_data(data):
 
   results = []
   for dev in data:
+    logger.info("Listing S.M.A.R.T data: " + dev)
     detail = data[dev]  # /dev/sda
     
     if ("ata_smart_attributes" in detail):
@@ -110,16 +117,18 @@ def create_value_list_non_nvme(dev, smart_attributes):
   return results
 
 
-def create_value_list_nvme(dev, smart_attributes):
+def create_value_list_nvme(dev, nvme_health_info):
   results = []
-  for key in smart_attributes:
+  for key in nvme_health_info:
 
     # NVMe にはthreshouldやworstはなく、valueだけ
     if key == "temperature_sensors":
-      for val, idx in smart_attributes["temperature_sensors"]:
+      # temperature_sensorsの複数の値は 末尾に連番をつけて展開されている
+      for idx, val in enumerate(nvme_health_info[key]):
         key = AttrKey.VALUE_KEY.format(dev, f"temperature_sensors{idx}")
         results.append({"host": cfg.ZABBIX_HOST, "key": key, "value": val})
     else:
+      val = nvme_health_info[key]
       key = AttrKey.VALUE_KEY.format(dev, key)
       results.append({"host": cfg.ZABBIX_HOST, "key": key, "value": val})
 

@@ -5,6 +5,7 @@ import subprocess
 from pprint import pprint
 
 import config as cfg
+import smartctl_util as smutil
 
 import modules.zabbix_parsed as zbx_parsed
 import modules.zabbix_smart as zbx_smart
@@ -12,6 +13,8 @@ import modules.zabbix_smart as zbx_smart
 logger = logging.getLogger(__name__)
 
 
+# smartctl --scan を実行して結果を返す
+#
 def exec_smartctl_scan():
 
     cmd = None
@@ -46,39 +49,40 @@ def get_smartctl_device_info_cmd():
     return cmd
 
 
-def is_usb_device(smartctl_result):
-    if ("smartctl" not in smartctl_result):
-        return False
-
-    if ("messages" not in smartctl_result["smartctl"]):
-        return False
-
-    for msg in smartctl_result["smartctl"]["messages"]:
-        if ("Unknown USB bridge" in msg["string"]):
-            return True
-    
-    return False
-
-
-def exec_smartctl_device_info(device_name):
+def exec_smartctl_device_info(device_name, device_type):
 
     result = None
     retcode = 999
 
+    # call smartctl without any option
     if True:
         cmd = get_smartctl_device_info_cmd()
         cmd.append(device_name)
         logger.debug(cmd)
+
+        if device_type.startswith("megaraid"):
+            # megaraid
+            cmd.extend(["-d", device_type])
+        
         proc_info = subprocess.run(cmd, stdout=subprocess.PIPE)
         retcode = proc_info.returncode
         result = json.loads(proc_info.stdout)
-        if (retcode > 4):  # 0 = ok , 1 = maybe USB
+        if (retcode > 4):  # 0 = ok , 1 = maybe USB , 2 = megaraid
             raise RuntimeError(f"smartctl return code = {retcode}. cmd = {cmd}")
 
     # print(result)
 
+    # Unable to Detect
+    if (smutil.is_unknown_device(result)):
+        logger.warning("Unknown or Not supported device. Ignored: " + device_name)
+        return None
+
+    # Device is MegaRaid volume? then, skip it. (check it later by /dev/bus/0, megaraid,N)
+    if (smutil.is_megaraid_device(result)):
+        return None
+
     # retry with "-d sat" if device is behind usb converter
-    if (is_usb_device(result)):
+    if (smutil.is_usb_device(result)):
         logger.info(f"{device_name} USB Bridge find. retry with -d sat.")
         cmd = get_smartctl_device_info_cmd()
         cmd.extend(["-d", "sat", device_name])
@@ -128,6 +132,27 @@ def find_interpriter(device_info):
     raise RuntimeError("No interpriters")
 
 
+def assign_device_id(device_info):
+    """       
+    デバイスを一意に識別できるIDを決める
+    /dev/sda などは認識順なので一意ではないのでできれば使いたくない
+    """
+    # "device": {
+    #   "name": "/dev/bus/0",
+    #   "info_name": "/dev/bus/0 [megaraid_disk_00] [SAT]",
+    #   "type": "sat+megaraid,0",
+    # },
+    if (device_info.get("serial_number") != None):
+        return device_info["serial_number"]   # シリアル番号があればそれ
+
+    # fallback
+    dev = device_info["device"]  # さすがにこれがないのは無い
+    if dev["name"].startswith("/dev/bus/"):
+        return dev["name"] + dev["type"]
+        
+    return dev["name"]
+
+
 if __name__ == '__main__':
 
     if (cfg.LOG_LEVEL.upper() == "ERROR"):
@@ -142,6 +167,8 @@ if __name__ == '__main__':
     logger.info("START")
 
     # scan_resultだけでdiscoveryを送信したいが、model_name等情報が足りない
+    # のですべての結果を取得するまでdevice discoveryを送信できない
+    # scan_resultは明細を取るためだけに使用されて、zabbixへのデータ送信には使われない。
     scan_result = exec_smartctl_scan()
 
     full_results = {}
@@ -149,19 +176,26 @@ if __name__ == '__main__':
 
     for device in scan_result["devices"]:
         dev = device["name"]
-        logger.info(f"Checking device {dev}")
-        device_info = exec_smartctl_device_info(device["name"])
-        full_results[dev] = device_info
+        dev_type = device["type"]
+        logger.info(f"Checking device {dev} type {dev_type}")
+        device_info = exec_smartctl_device_info(dev, dev_type)
+        if device_info == None:
+            # megaraid device
+            continue
 
+        dev_id = assign_device_id(device_info)
+        
+        full_results[dev_id] = device_info
         interpriter = find_interpriter(device_info)
+        parsed_results[dev_id] = interpriter.parse(device_info)
 
-        parsed_results[dev] = interpriter.parse(device_info)
+    # デバイスディスカバリを送信
+    zbx_parsed.send_device_discovery(parsed_results)
 
     # パース成功したデータを扱う
-    zbx_parsed.send_device_discovery(parsed_results)
     zbx_parsed.send_parsed_data(parsed_results)
 
-    # SMART全データを送信する
+    # SMART discovery と SMART全データを送信する
     zbx_smart.send_attribute_discovery(full_results)
     zbx_smart.send_smart_data(full_results)
 
