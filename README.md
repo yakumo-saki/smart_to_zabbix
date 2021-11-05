@@ -1,7 +1,3 @@
-# Status
-
-NVMe disk is not tested. otherwise may be work
-
 # smart to zabbix
 
 smartctl を使用して取得したSMART情報をZABBIXに送信します。
@@ -9,8 +5,6 @@ WindowsとLinuxに対応しています。
 外部コマンドとしてsmartctlに依存します。なお、zabbix_senderは使用しません。
 
 ## 使い方
-
-初回使用時はもう少し手順が必要です。 下の初回時の項目を参照してください。
 
 ### 起動
 
