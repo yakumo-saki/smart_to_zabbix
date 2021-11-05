@@ -128,6 +128,7 @@ def create_value_list_nvme(dev, nvme_health_info):
         key = AttrKey.VALUE_KEY.format(dev, f"temperature_sensors{idx}")
         results.append({"host": cfg.ZABBIX_HOST, "key": key, "value": val})
     else:
+      val = nvme_health_info[key]
       key = AttrKey.VALUE_KEY.format(dev, key)
       results.append({"host": cfg.ZABBIX_HOST, "key": key, "value": val})
 
