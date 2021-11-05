@@ -55,15 +55,15 @@ def create_attribute_list_non_nvme(discovery_base, smart_attributes):
   return result
 
 
-def create_attribute_list_nvme(discovery_base, smart_attributes):
+def create_attribute_list_nvme(discovery_base, nvme_health_info):
   import copy 
 
   result = []
-  for key in smart_attributes:
+  for key in nvme_health_info:
     discovery = copy.deepcopy(discovery_base)
 
     if key == "temperature_sensors":
-      for _, idx in smart_attributes[key]:
+      for idx, _ in enumerate(nvme_health_info[key]):
         # temperature_sensorsの名前の通り、複数の温度センサーがあると値が複数入るので
         # temperature_sensors1,2 のような名前に展開する
         discovery[AttrKey.ATTR_NAME] = f"temperature_sensors{idx}"
@@ -117,15 +117,14 @@ def create_value_list_non_nvme(dev, smart_attributes):
   return results
 
 
-def create_value_list_nvme(dev, smart_attributes):
+def create_value_list_nvme(dev, nvme_health_info):
   results = []
-  print(smart_attributes)
-  for key in smart_attributes:
+  for key in nvme_health_info:
 
     # NVMe にはthreshouldやworstはなく、valueだけ
     if key == "temperature_sensors":
       # temperature_sensorsの複数の値は 末尾に連番をつけて展開されている
-      for val, idx in smart_attributes[key]:
+      for idx, val in enumerate(nvme_health_info[key]):
         key = AttrKey.VALUE_KEY.format(dev, f"temperature_sensors{idx}")
         results.append({"host": cfg.ZABBIX_HOST, "key": key, "value": val})
     else:

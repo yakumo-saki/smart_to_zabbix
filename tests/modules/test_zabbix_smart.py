@@ -5,7 +5,7 @@ import json
 import glob
 import tests.util as util
 
-class TestStringMethods(unittest.TestCase):
+class TestZabbixSmartListNvme(unittest.TestCase):
  
     def test_create_attribute_list_nvme(self):
         """ 
@@ -18,16 +18,14 @@ class TestStringMethods(unittest.TestCase):
                 continue
 
             with self.subTest(filename):
-                with open("smart_examples/device_nvme/samsung_ssd_980.json") as f:
+                with open(filename) as f:
                     jsonStr = f.read()
 
                 detail = json.loads(jsonStr)
                 discovery = {AttrKey.DEV_NAME: "dummy", AttrKey.DISK_NAME: filename}
 
                 zabbix_smart.create_attribute_list_nvme(discovery, detail["nvme_smart_health_information_log"])
+                
+                self.assertTrue(True)
 
 
-        
-
-if __name__ == '__main__':
-    unittest.main()
