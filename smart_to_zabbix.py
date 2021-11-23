@@ -155,14 +155,16 @@ def assign_device_id(device_info):
 
 if __name__ == '__main__':
 
+    fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
+
     if (cfg.LOG_LEVEL.upper() == "ERROR"):
-        logging.basicConfig(level=logging.ERROR)
+        logging.basicConfig(level=logging.ERROR, format=fmt)
     elif (cfg.LOG_LEVEL.upper() == "WARN"):
-        logging.basicConfig(level=logging.WARN)
+        logging.basicConfig(level=logging.WARN, format=fmt)
     elif (cfg.LOG_LEVEL.upper() == "INFO"):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.INFO, format=fmt)
     else:
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG, format=fmt)
 
     logger.info("START")
 
