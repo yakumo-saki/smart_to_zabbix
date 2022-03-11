@@ -1,0 +1,14 @@
+{
+    "model": "Samsung SSD 850 EVO 250GB",
+    "type": "sat",
+    "rotation_rate": 0,
+    "protocol": "ATA",
+    "serial_number": "S3*************",
+    "power_cycle": 300,
+    "power_on_hours": 29376,
+    "temperature": 32,
+    "ssd.bytes_written": 61792136449024,
+    "ssd.bytes_written_max": 75000000000000,
+    "ssd.lifespan": null,
+    "smart_status_passed": 1
+}

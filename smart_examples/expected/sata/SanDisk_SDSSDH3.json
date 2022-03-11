@@ -1,0 +1,14 @@
+{
+  "model": "SanDisk SDSSDH3 500G",
+  "type": "sat",
+  "rotation_rate": 0,
+  "protocol": "ATA",
+  "serial_number": "***********",
+  "power_cycle": 616,
+  "power_on_hours": 5131,
+  "temperature": 34,
+  "ssd.bytes_written": 14810120978432,
+  "ssd.lifespan": 100,
+  "smart_status_passed": 1,
+  "ssd.bytes_written_max": 200000000000000
+}

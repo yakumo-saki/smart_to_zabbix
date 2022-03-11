@@ -1,0 +1,13 @@
+{
+  "model": "CT240BX500SSD1",
+  "type": "sat",
+  "rotation_rate": 0,
+  "protocol": "ATA",
+  "serial_number": "************",
+  "power_cycle": 838,
+  "power_on_hours": 512,
+  "temperature": 46,
+  "ssd.bytes_written": null,
+  "ssd.lifespan": null,
+  "smart_status_passed": 1
+}

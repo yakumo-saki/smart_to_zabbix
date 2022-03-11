@@ -1,0 +1,13 @@
+{
+  "model": "WDC WD30EFRX-68EUZN0",
+  "type": "sat+megaraid,0",
+  "rotation_rate": 5400,
+  "protocol": "ATA",
+  "serial_number": "***************",
+  "power_cycle": 750,
+  "power_on_hours": 63823,
+  "temperature": 39,
+  "ssd.bytes_written": null,
+  "ssd.lifespan": null,
+  "smart_status_passed": 1
+}

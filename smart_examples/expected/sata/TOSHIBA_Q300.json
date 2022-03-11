@@ -1,0 +1,13 @@
+{
+  "model": "TOSHIBA Q300.",
+  "type": "sat",
+  "rotation_rate": 0,
+  "protocol": "ATA",
+  "serial_number": "569B46MMKC9U",
+  "power_cycle": 1173,
+  "power_on_hours": 8629,
+  "temperature": 27,
+  "ssd.bytes_written": null,
+  "ssd.lifespan": null,
+  "smart_status_passed": 1
+}

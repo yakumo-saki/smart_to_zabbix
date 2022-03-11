@@ -1,0 +1,13 @@
+{
+  "model": "XPG GAMMIX S50 Lite",
+  "type": "nvme",
+  "rotation_rate": null,
+  "protocol": "NVMe",
+  "serial_number": "************",
+  "power_cycle": 12,
+  "power_on_hours": 939,
+  "temperature": 44,
+  "ssd.bytes_written": null,
+  "ssd.lifespan": 100,
+  "smart_status_passed": 1
+}

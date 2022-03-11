@@ -1,0 +1,13 @@
+{
+  "model": "INTEL SSDSA2M080G2GC",
+  "type": "sat",
+  "rotation_rate": 0,
+  "protocol": "ATA",
+  "serial_number": "******************",
+  "power_cycle": 3205,
+  "power_on_hours": 28943,
+  "temperature": null,
+  "ssd.bytes_written": 25040900849664,
+  "ssd.lifespan": 91,
+  "smart_status_passed": 1
+}

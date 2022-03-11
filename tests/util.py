@@ -1,43 +1,36 @@
+from operator import concat
 import os
 import glob
 import tests.const as const
 
-def is_not_test_target(filepath):
+def is_test_target(filepath):
     base = os.path.basename(filepath)
-    return base.startswith("_")
+    return base.startswith("_") == False
 
 
 def get_json_paths(dir):
     cwd = os.getcwd()
     globspec = os.path.join(cwd, dir, "*.json")
-    return glob.glob(globspec)
+
+    all = glob.glob(globspec)
+    ret = filter(is_test_target, all)
+    
+    return list(ret)
     
 
 
 def get_sata_json_paths():
-    all = get_json_paths(const.EXAMPLE_DEV_SATA_DIR)
-    
-    ret = []
-    for f in all:
-        if is_not_test_target(f) == False:
-            ret.append(f)
-    return ret
+    all = get_json_paths(const.EXAMPLE_DEV_SATA_DIR)   
+    return all
 
 def get_nvme_json_paths():
     all = get_json_paths(const.EXAMPLE_DEV_NVME_DIR)
-
-    ret = []
-    for f in all:
-        if is_not_test_target(f) == False:
-            ret.append(f)
-    return ret
+    return all
 
 
 def get_all_json_paths():
-    all = get_json_paths(const.EXAMPLE_DEVICE_DIR)
+    sata = get_sata_json_paths()
+    nvme = get_nvme_json_paths()
+    all = sata + nvme
 
-    ret = []
-    for f in all:
-        if is_not_test_target(f) == False:
-            ret.append(f)
-    return ret
+    return all

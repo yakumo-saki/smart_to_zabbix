@@ -1,0 +1,15 @@
+{
+    "model": "SanDisk SSD PLUS 120 GB",
+    "type": "ata",
+    "rotation_rate": 0,
+    "protocol": "ATA",
+    "serial_number": "************",
+    "power_cycle": 164,
+    "power_on_hours": 28946,
+    "temperature": 40,
+    "ssd.bytes_written": 34230889349120,
+    "ssd.lifespan": 100,
+    "smart_status_passed": 1,
+    "ssd.bytes_written_max": null
+  }
+  

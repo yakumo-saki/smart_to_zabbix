@@ -1,0 +1,13 @@
+{
+  "model": "Crucial_CT250MX200SSD1",
+  "type": "ata",
+  "rotation_rate": 0,
+  "protocol": "ATA",
+  "serial_number": "************",
+  "power_cycle": 347,
+  "power_on_hours": 48633,
+  "temperature": 43,
+  "ssd.bytes_written": null,
+  "ssd.lifespan": null,
+  "smart_status_passed": 1
+}
