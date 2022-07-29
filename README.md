@@ -21,6 +21,7 @@ WindowsとLinuxに対応しています。
 環境変数で設定可能です。設定可能項目は以下の通り。
 
 | 変数名 | 設定例 | 用途 | 
+| ------| ------ | ------ |
 | ZABBIX_SERVER | 192.168.1.123 | Zabbixサーバーのホスト名orIPアドレス。省略不可 |
 | ZABBIX_PORT | 10051 | Zabbixサーバーのポート。省略時は10051 |
 | ZABBIX_HOST | test | Zabbixホスト名。省略不可 |
